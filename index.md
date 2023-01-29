@@ -25,7 +25,8 @@ In this tutorial we will the data contained in the subfolder "pixel". We will us
 
 As first step, load all necessary R packages by executing the following code:
 
-	require("raster")
+	require("terra")
+	require("sf")
 	require("rgdal")
 	require("e1071")
 	require("kernlab")
@@ -35,7 +36,7 @@ In case you receive an error-message, please make sure that you have all package
 Next, we will load the Sentinel-2 image using the steps you already know from the two proceeding Tutorials. We will use the same Sentinel-2 scene that you already applied in the last Tutorial:
 
 	setwd("D:/Remote_Sensing/1_Fernerkundung/One_class_classification")
-	img <- stack("s2_10m_constitucion_sub2.tif")
+	img <- rast("s2_10m_constitucion_sub2.tif")
 
 Just for the fun of it, we can have a quick look using a RGB plot:
 
@@ -52,9 +53,9 @@ In this first part of the tutorial, our objective is to identify and map all gra
 We will now load the samples for the positive class (grassland) and the background (random sample of pixels collected over the whole extent of the image) for our classification example:
 
 	# load training data of target class
-	target_tr <- readOGR(".", "grassl") 
+	target_tr <- vect(".", "grassl") 
 	# load background data
-	backgr <- readOGR(".", "backgr")
+	backgr <- vect(".", "backgr")
 
 We can now have a look at the locations of the sample pixels for the grasslands by running:
 
