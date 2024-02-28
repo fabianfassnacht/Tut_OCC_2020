@@ -163,7 +163,7 @@ This results in the following plot:
 As we can see, the plots look quite similar, but there also some differences visible. We can now check these results in QGIS and compare them to the original satellite data. For this we first have to save the results to raster-files:
 
 	# save prediction map
-	writeRaster(pred_occ1, filename="occ_results_po.tif", format="GTiff")
+	writeRaster(pred_occ1, filename="occ_results_po.tif", format="GTiff", overwrite=T)
 	writeRaster(pred_occ2, filename="occ_results_pb.tif", format="GTiff", overwrite=T)
  
 In the resulting raster-file all grassland areas should have the same value (1 or 2) and all other classes another value (0 or 1) . You can load the final classification map to QGIS and overlap the original satellite image with it to check the plausibility of the result. In case you are not happy with the results (too few or too many areas were classified as grassland), you can try to improve the results by changing the **nu** parameter (**nu** takes values between 0 and 1) in the code to train the classifiers. A higher **nu** value will results in more areas to be classified as grasslands, a lower parameter, will result in fewer areas to be classified as grasslands. 
