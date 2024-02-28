@@ -145,34 +145,16 @@ We are now ready to train the one-class classification using the **svm**- and **
 
 The trained one-class-classifier models are stored in the variables **svm_model_po** and **svm_model_pb**. We can now apply those classifier to the complete satellite image by running:
 
-	pred_occ1 <- predict(svm_model_po, values(img))
-	pred_occ2 <- predict(svm_model_pb, values(img))
+	pred_occ1 <- terra::predict(img, svm_model_po, na.rm=T)
+	pred_occ2 <- terra::predict(img, svm_model_pb, na.rm=T)
 
-This process might take a while, depending on the applied image and your computer's performance. As you can see we cannot directly apply the classifier to the image but have to use a small work-around by converting the image to a matrix. For this we use the function **values()**.
-
-After the  prediction is accomplished the predicted values are still stored in a vector-file and cannot be plotted as a map. Hence, we have to again apply a small work-around to save the predictions as images again. For this we run:
-
-	# Take a single band of the original image - its values will be overwritten with the classification
-	# results. This is an easy work-around to re-create the geographic information and the raster format
-	# as the one class classification was conducted on data-frame level
-	
-	# copy a single band to a new variable
-	occ_res1 <- img[[1]]
-	# overwrite values with occ predictions
-	values(occ_res1) <- pred_occ1
-	
-	# copy a single band to a new variable
-	occ_res2 <- img[[1]]
-	# overwrite values with occ predictions
-	values(occ_res2) <- pred_occ2
-
-With this code we first take one of the bands of the original image and then overwrite its values with the predicted values from the one-class-classification. This is an easy way to transform the vector-results to a map again.
+This process might take a while, depending on the applied image and your computer's performance. 
 
 We can now have a look at the prediction maps by running:
 
 	par(mfrow=c(1,2),oma=c(3,3,3,3))
-	plot(occ_res1)
-	plot(occ_res2)
+	plot(pred_occ1) 
+	plot(pred_occ2)
 
 This results in the following plot:
 
@@ -180,11 +162,10 @@ This results in the following plot:
 
 As we can see, the plots look quite similar, but there also some differences visible. We can now check these results in QGIS and compare them to the original satellite data. For this we first have to save the results to raster-files:
 
-
 	# save prediction map
-	writeRaster(occ_res1, filename="occ_results_po.tif", format="GTiff")
-	writeRaster(occ_res2, filename="occ_results_pb.tif", format="GTiff", overwrite=T)
-
+	writeRaster(pred_occ1, filename="occ_results_po.tif", format="GTiff")
+	writeRaster(pred_occ2, filename="occ_results_pb.tif", format="GTiff", overwrite=T)
+ 
 In the resulting raster-file all grassland areas should have the same value (1 or 2) and all other classes another value (0 or 1) . You can load the final classification map to QGIS and overlap the original satellite image with it to check the plausibility of the result. In case you are not happy with the results (too few or too many areas were classified as grassland), you can try to improve the results by changing the **nu** parameter (**nu** takes values between 0 and 1) in the code to train the classifiers. A higher **nu** value will results in more areas to be classified as grasslands, a lower parameter, will result in fewer areas to be classified as grasslands. 
 
 We can furthermore, calculate a confusion matrix based on our original reference data by running:
